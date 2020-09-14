@@ -20,8 +20,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.annotation.Resource;
+import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.jms.Destination;
+import javax.jms.JMSConnectionFactory;
 import javax.jms.JMSContext;
 import javax.jms.Queue;
 import javax.jms.Topic;
@@ -63,6 +65,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author Serge Pagop (spagop@redhat.com)
  *
  */
+@ApplicationScoped
 @WebServlet("/HelloWorldMDBServletClient")
 public class HelloWorldMDBServletClient extends HttpServlet {
 
@@ -71,6 +74,7 @@ public class HelloWorldMDBServletClient extends HttpServlet {
     private static final int MSG_COUNT = 5;
 
     @Inject
+    @JMSConnectionFactory("java:jboss/DefaultJMSConnectionFactory")
     private JMSContext context;
 
     @Resource(lookup = "java:/queue/HelloWorldMDBQueue")
