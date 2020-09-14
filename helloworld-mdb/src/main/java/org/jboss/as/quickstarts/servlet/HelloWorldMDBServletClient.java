@@ -17,15 +17,15 @@
 package org.jboss.as.quickstarts.servlet;
 
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
 import javax.annotation.Resource;
 import javax.enterprise.context.ApplicationScoped;
+import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.jms.JMSContext;
+import javax.jms.JMSException;
+import javax.jms.MessageProducer;
 import javax.jms.Queue;
+import javax.jms.Session;
+import javax.jms.TextMessage;
 import javax.jms.Topic;
 import javax.naming.InitialContext;
 import javax.servlet.ServletException;
@@ -33,6 +33,8 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 ///**
 // * Definition of the two JMS destinations used by the quickstart
@@ -60,11 +62,9 @@ import javax.servlet.http.HttpServletResponse;
  *
  * <p>
  * The servlet is registered and mapped to /HelloWorldMDBServletClient using the {@linkplain WebServlet
- * @HttpServlet}.
- * </p>
  *
  * @author Serge Pagop (spagop@redhat.com)
- *
+ * @HttpServlet}. </p>
  */
 @ApplicationScoped
 @WebServlet("/HelloWorldMDBServletClient")
@@ -73,10 +73,6 @@ public class HelloWorldMDBServletClient extends HttpServlet {
     private static final long serialVersionUID = -8314035702649252239L;
 
     private static final int MSG_COUNT = 5;
-
-//    @Inject
-//    @JMSConnectionFactory("java:jboss/DefaultJMSConnectionFactory")
-//    private JMSContext context;
 
     @Resource(lookup = "java:/queue/HelloWorldMDBQueue")
     private Queue queue;
@@ -88,37 +84,48 @@ public class HelloWorldMDBServletClient extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
-        // Gets the JNDI context - use naming setup from jndi.properties
-        JMSContext context = null;
+
+        Connection connection = null;
         try {
-            InitialContext jndiContext = new InitialContext();
-            // Lookup the ConnectionFactory
-            ConnectionFactory connectionFactory = (ConnectionFactory) jndiContext.lookup("java:jboss/DefaultJMSConnectionFactory");
-            context = connectionFactory.createContext();
+            InitialContext ic = new InitialContext();
+            // Now we'll look up the connection factory from which we can create connections to embedded broker:
+            ConnectionFactory cf = (ConnectionFactory) ic.lookup("java:jboss/DefaultJMSConnectionFactory");
+
+            // We create a JMS connection using the connection factory:
+            connection = cf.createConnection();
+
+            // And we create a non transacted JMS Session, with AUTO_ACKNOWLEDGE acknowledge mode:
+            Session session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+            // We create a MessageProducer that will send orders to the queue:
+            MessageProducer producer = session.createProducer(queue);
+
+            // We make sure we start the connection, or delivery won't occur on it:
+            connection.start();
+
+            for (int i = 0; i < 5; i++) {
+                System.out.println("Send a message id: " + i);
+                // We create a simple TextMessage and send it:
+                TextMessage message = session.createTextMessage("This is an order " + i);
+                producer.send(message);
+            }
         } catch (Exception ex) {
             ex.printStackTrace();
             out.write(ex.getMessage());
-        }
-
-        out.write("<h1>Quickstart: Example demonstrates the use of <strong>JMS 2.0</strong> and <strong>EJB 3.2 Message-Driven Bean</strong> in JBoss EAP.</h1>");
-        try {
-            boolean useTopic = req.getParameterMap().keySet().contains("topic");
-            final Destination destination = useTopic ? topic : queue;
-
-            out.write("<p>Sending messages to <em>" + destination + "</em></p>");
-            out.write("<h2>The following messages will be sent to the destination:</h2>");
-            for (int i = 0; i < MSG_COUNT; i++) {
-                String text = "This is message " + (i + 1);
-                context.createProducer().send(destination, text);
-                out.write("Message (" + i + "): " + text + "</br>");
-            }
-            out.write("<p><i>Go to your JBoss EAP server console or server log to see the result of messages processing.</i></p>");
         } finally {
+            out.write("<h1>Quickstart: Example demonstrates the use of <strong>JMS 2.0</strong> and <strong>EJB 3.2 Message-Driven Bean</strong> in JBoss EAP.</h1>");
+            out.write("<p><i>Go to your JBoss EAP server console or server log to see the result of messages processing.</i></p>");
+            try {
+                connection.close();
+            } catch (JMSException e) {
+                e.printStackTrace();
+            }
             if (out != null) {
                 out.close();
             }
         }
     }
+
 
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         doGet(req, resp);
