@@ -70,6 +70,14 @@
             <artifactId>jboss-annotations-api_1.3_spec</artifactId>
             <scope>provided</scope>
         </dependency>
+<!--         https://mvnrepository.com/artifact/org.apache.activemq/activemq-all -->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.activemq</groupId>-->
+<!--            <artifactId>activemq-all</artifactId>-->
+<!--            <version>5.16.0</version>-->
+<!--        </dependency>-->
+
+
 
     </dependencies>
 

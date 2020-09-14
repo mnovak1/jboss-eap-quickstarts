@@ -16,17 +16,18 @@
  */
 package org.jboss.as.quickstarts.servlet;
 
+
 import java.io.IOException;
 import java.io.PrintWriter;
 
 import javax.annotation.Resource;
 import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
-import javax.jms.JMSConnectionFactory;
 import javax.jms.JMSContext;
 import javax.jms.Queue;
 import javax.jms.Topic;
+import javax.naming.InitialContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -73,9 +74,9 @@ public class HelloWorldMDBServletClient extends HttpServlet {
 
     private static final int MSG_COUNT = 5;
 
-    @Inject
-    @JMSConnectionFactory("java:jboss/DefaultJMSConnectionFactory")
-    private JMSContext context;
+//    @Inject
+//    @JMSConnectionFactory("java:jboss/DefaultJMSConnectionFactory")
+//    private JMSContext context;
 
     @Resource(lookup = "java:/queue/HelloWorldMDBQueue")
     private Queue queue;
@@ -87,6 +88,18 @@ public class HelloWorldMDBServletClient extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         resp.setContentType("text/html");
         PrintWriter out = resp.getWriter();
+        // Gets the JNDI context - use naming setup from jndi.properties
+        JMSContext context = null;
+        try {
+            InitialContext jndiContext = new InitialContext();
+            // Lookup the ConnectionFactory
+            ConnectionFactory connectionFactory = (ConnectionFactory) jndiContext.lookup("java:jboss/DefaultJMSConnectionFactory");
+            context = connectionFactory.createContext();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            out.write(ex.getMessage());
+        }
+
         out.write("<h1>Quickstart: Example demonstrates the use of <strong>JMS 2.0</strong> and <strong>EJB 3.2 Message-Driven Bean</strong> in JBoss EAP.</h1>");
         try {
             boolean useTopic = req.getParameterMap().keySet().contains("topic");
