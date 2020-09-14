@@ -40,12 +40,12 @@ import javax.servlet.http.HttpServletResponse;
 @JMSDestinationDefinitions(
     value = {
         @JMSDestinationDefinition(
-            name = "java:/queue/HELLOWORLDMDBQueue",
+            name = "java:/queue/HelloWorldMDBQueue",
             interfaceName = "javax.jms.Queue",
             destinationName = "HelloWorldMDBQueue"
         ),
         @JMSDestinationDefinition(
-            name = "java:/topic/HELLOWORLDMDBTopic",
+            name = "java:/topic/HelloWorldMDBTopic",
             interfaceName = "javax.jms.Topic",
             destinationName = "HelloWorldMDBTopic"
         )
@@ -75,10 +75,10 @@ public class HelloWorldMDBServletClient extends HttpServlet {
     @Inject
     private JMSContext context;
 
-    @Resource(lookup = "java:/queue/HELLOWORLDMDBQueue")
+    @Resource(lookup = "java:/queue/HelloWorldMDBQueue")
     private Queue queue;
 
-    @Resource(lookup = "java:/topic/HELLOWORLDMDBTopic")
+    @Resource(lookup = "java:/topic/HelloWorldMDBTopic")
     private Topic topic;
 
     @Override
