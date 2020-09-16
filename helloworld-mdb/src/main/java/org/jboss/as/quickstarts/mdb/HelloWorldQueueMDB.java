@@ -23,6 +23,7 @@ import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
 import javax.jms.TextMessage;
+import org.jboss.ejb3.annotation.ResourceAdapter;
 
 /**
  * <p>
@@ -31,10 +32,15 @@ import javax.jms.TextMessage;
  *
  * @author Serge Pagop (spagop@redhat.com)
  */
-@MessageDriven(name = "HelloWorldQueueMDB", activationConfig = {
-        @ActivationConfigProperty(propertyName = "destination", propertyValue = "java:/queue/HelloWorldMDBQueue"),
+@MessageDriven(name = "inQueue", activationConfig = {
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "inQueue"),
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
-        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge")})
+        @ActivationConfigProperty(propertyName = "user", propertyValue = "admin"),
+        @ActivationConfigProperty(propertyName = "password", propertyValue = "admin"),
+        @ActivationConfigProperty(propertyName = "connectionFactoryLookup" , propertyValue =  "java:jboss/RemoteJmsXA" ),
+        @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge")
+})
+@ResourceAdapter(value="activemq-ra-remote")
 public class HelloWorldQueueMDB implements MessageListener {
 
     private static final Logger LOGGER = Logger.getLogger(HelloWorldQueueMDB.class.toString());

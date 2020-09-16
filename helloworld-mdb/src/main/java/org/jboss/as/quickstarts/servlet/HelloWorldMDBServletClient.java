@@ -18,15 +18,14 @@ package org.jboss.as.quickstarts.servlet;
 
 
 import javax.annotation.Resource;
-import javax.enterprise.context.ApplicationScoped;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.JMSException;
+import javax.jms.MessageConsumer;
 import javax.jms.MessageProducer;
 import javax.jms.Queue;
 import javax.jms.Session;
 import javax.jms.TextMessage;
-import javax.jms.Topic;
 import javax.naming.InitialContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -66,7 +65,7 @@ import java.io.PrintWriter;
  * @author Serge Pagop (spagop@redhat.com)
  * @HttpServlet}. </p>
  */
-@ApplicationScoped
+//@ApplicationScoped
 @WebServlet("/HelloWorldMDBServletClient")
 public class HelloWorldMDBServletClient extends HttpServlet {
 
@@ -74,11 +73,11 @@ public class HelloWorldMDBServletClient extends HttpServlet {
 
     private static final int MSG_COUNT = 5;
 
-    @Resource(lookup = "java:/queue/HelloWorldMDBQueue")
+    @Resource(lookup = "java:/jms/amq/queue/inQueue")
     private Queue queue;
 
-    @Resource(lookup = "java:/topic/HelloWorldMDBTopic")
-    private Topic topic;
+//    @Resource(lookup = "java:/topic/HelloWorldMDBTopic")
+//    private Topic topic;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -88,8 +87,8 @@ public class HelloWorldMDBServletClient extends HttpServlet {
         Connection connection = null;
         try {
             InitialContext ic = new InitialContext();
-            // Now we'll look up the connection factory from which we can create connections to embedded broker:
-            ConnectionFactory cf = (ConnectionFactory) ic.lookup("java:jboss/DefaultJMSConnectionFactory");
+            // Now we'll look up the connection factory
+            ConnectionFactory cf = (ConnectionFactory) ic.lookup("java:/RemoteJmsXA");
 
             // We create a JMS connection using the connection factory:
             connection = cf.createConnection();
@@ -99,6 +98,7 @@ public class HelloWorldMDBServletClient extends HttpServlet {
 
             // We create a MessageProducer that will send orders to the queue:
             MessageProducer producer = session.createProducer(queue);
+            MessageConsumer consumer = session.createConsumer(queue);
 
             // We make sure we start the connection, or delivery won't occur on it:
             connection.start();
@@ -109,12 +109,23 @@ public class HelloWorldMDBServletClient extends HttpServlet {
                 TextMessage message = session.createTextMessage("This is an order " + i);
                 producer.send(message);
             }
+
+            for (int i = 0; i < 4; i++) {
+                TextMessage receivedMessage = (TextMessage) consumer.receive();
+                System.out.println("Got order: " + receivedMessage.getText());
+            }
+
         } catch (Exception ex) {
             ex.printStackTrace();
             out.write(ex.getMessage());
         } finally {
+            out.write("Send messages to " + queue.toString());
+            out.write(System.lineSeparator());
             out.write("<h1>Quickstart: Example demonstrates the use of <strong>JMS 2.0</strong> and <strong>EJB 3.2 Message-Driven Bean</strong> in JBoss EAP.</h1>");
+            out.write(System.lineSeparator());
             out.write("<p><i>Go to your JBoss EAP server console or server log to see the result of messages processing.</i></p>");
+            out.write(System.lineSeparator());
+
             try {
                 connection.close();
             } catch (JMSException e) {
