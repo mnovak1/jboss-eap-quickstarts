@@ -35,25 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
-///**
-// * Definition of the two JMS destinations used by the quickstart
-// * (one queue and one topic).
-// */
-//@JMSDestinationDefinitions(
-//    value = {
-//        @JMSDestinationDefinition(
-//            name = "java:/queue/HelloWorldMDBQueue",
-//            interfaceName = "javax.jms.Queue",
-//            destinationName = "HelloWorldMDBQueue"
-//        ),
-//        @JMSDestinationDefinition(
-//            name = "java:/topic/HelloWorldMDBTopic",
-//            interfaceName = "javax.jms.Topic",
-//            destinationName = "HelloWorldMDBTopic"
-//        )
-//    }
-//)
-
 /**
  * <p>
  * A simple servlet 3 as client that sends several messages to a queue or a topic.
@@ -65,19 +46,15 @@ import java.io.PrintWriter;
  * @author Serge Pagop (spagop@redhat.com)
  * @HttpServlet}. </p>
  */
-//@ApplicationScoped
-@WebServlet("/HelloWorldMDBServletClient")
-public class HelloWorldMDBServletClient extends HttpServlet {
+@WebServlet("/TestQueueServletClient")
+public class TestQueueServletClient extends HttpServlet {
 
     private static final long serialVersionUID = -8314035702649252239L;
 
     private static final int MSG_COUNT = 5;
 
-    @Resource(lookup = "java:/jms/amq/queue/inQueue")
+    @Resource(lookup = "java:/jms/amq/queue/testQueue")
     private Queue queue;
-
-//    @Resource(lookup = "java:/topic/HelloWorldMDBTopic")
-//    private Topic topic;
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -119,11 +96,7 @@ public class HelloWorldMDBServletClient extends HttpServlet {
             ex.printStackTrace();
             out.write(ex.getMessage());
         } finally {
-            out.write("Send messages to " + queue.toString());
-            out.write(System.lineSeparator());
-            out.write("<h1>Quickstart: Example demonstrates the use of <strong>JMS 2.0</strong> and <strong>EJB 3.2 Message-Driven Bean</strong> in JBoss EAP.</h1>");
-            out.write(System.lineSeparator());
-            out.write("<p><i>Go to your JBoss EAP server console or server log to see the result of messages processing.</i></p>");
+            out.write("Send and consume messages to/from " + queue.toString());
             out.write(System.lineSeparator());
 
             try {

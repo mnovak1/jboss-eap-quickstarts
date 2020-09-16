@@ -32,8 +32,8 @@ import org.jboss.ejb3.annotation.ResourceAdapter;
  *
  * @author Serge Pagop (spagop@redhat.com)
  */
-@MessageDriven(name = "inQueue", activationConfig = {
-        @ActivationConfigProperty(propertyName = "destination", propertyValue = "inQueue"),
+@MessageDriven(name = "testQueueMDB", activationConfig = {
+        @ActivationConfigProperty(propertyName = "destination", propertyValue = "testQueue"),
         @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"),
         @ActivationConfigProperty(propertyName = "user", propertyValue = "admin"),
         @ActivationConfigProperty(propertyName = "password", propertyValue = "admin"),
@@ -41,9 +41,9 @@ import org.jboss.ejb3.annotation.ResourceAdapter;
         @ActivationConfigProperty(propertyName = "acknowledgeMode", propertyValue = "Auto-acknowledge")
 })
 @ResourceAdapter(value="activemq-ra-remote")
-public class HelloWorldQueueMDB implements MessageListener {
+public class TestQueueMDB implements MessageListener {
 
-    private static final Logger LOGGER = Logger.getLogger(HelloWorldQueueMDB.class.toString());
+    private static final Logger LOGGER = Logger.getLogger(TestQueueMDB.class.toString());
 
     /**
      * @see MessageListener#onMessage(Message)

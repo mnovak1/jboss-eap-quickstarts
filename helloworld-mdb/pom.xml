@@ -75,14 +75,6 @@
             <artifactId>jboss-ejb3-ext-api</artifactId>
             <version>2.3.0.Final</version>
         </dependency>
-        <!--         https://mvnrepository.com/artifact/org.apache.activemq/activemq-all -->
-<!--        <dependency>-->
-<!--            <groupId>org.apache.activemq</groupId>-->
-<!--            <artifactId>activemq-all</artifactId>-->
-<!--            <version>5.16.0</version>-->
-<!--        </dependency>-->
-
-
 
     </dependencies>
 
