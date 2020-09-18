@@ -16,15 +16,10 @@
  */
 package org.jboss.as.quickstarts.servlet;
 
-import java.io.IOException;
-import java.io.PrintWriter;
-
 import javax.annotation.Resource;
 import javax.inject.Inject;
 import javax.jms.Destination;
 import javax.jms.JMSContext;
-import javax.jms.JMSDestinationDefinition;
-import javax.jms.JMSDestinationDefinitions;
 import javax.jms.Queue;
 import javax.jms.Topic;
 import javax.servlet.ServletException;
@@ -32,25 +27,27 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.PrintWriter;
 
 /**
  * Definition of the two JMS destinations used by the quickstart
  * (one queue and one topic).
  */
-@JMSDestinationDefinitions(
-    value = {
-        @JMSDestinationDefinition(
-            name = "java:/queue/HELLOWORLDMDBQueue",
-            interfaceName = "javax.jms.Queue",
-            destinationName = "HelloWorldMDBQueue"
-        ),
-        @JMSDestinationDefinition(
-            name = "java:/topic/HELLOWORLDMDBTopic",
-            interfaceName = "javax.jms.Topic",
-            destinationName = "HelloWorldMDBTopic"
-        )
-    }
-)
+//@JMSDestinationDefinitions(
+//    value = {
+//        @JMSDestinationDefinition(
+//            name = "java:/queue/HELLOWORLDMDBQueue",
+//            interfaceName = "javax.jms.Queue",
+//            destinationName = "HelloWorldMDBQueue"
+//        ),
+//        @JMSDestinationDefinition(
+//            name = "java:/topic/HELLOWORLDMDBTopic",
+//            interfaceName = "javax.jms.Topic",
+//            destinationName = "HelloWorldMDBTopic"
+//        )
+//    }
+//)
 
 /**
  * <p>
@@ -75,10 +72,10 @@ public class HelloWorldMDBServletClient extends HttpServlet {
     @Inject
     private JMSContext context;
 
-    @Resource(lookup = "java:/queue/HELLOWORLDMDBQueue")
+    @Resource(lookup = "java:/HelloWorldMDBQueue")
     private Queue queue;
 
-    @Resource(lookup = "java:/topic/HELLOWORLDMDBTopic")
+    @Resource(lookup = "java:/HelloWorldMDBTopic")
     private Topic topic;
 
     @Override
