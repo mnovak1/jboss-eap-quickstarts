@@ -3,7 +3,7 @@ embed-server --std-out=echo  --server-config=standalone-openshift.xml
 /subsystem=ee:write-attribute(name=jboss-descriptor-property-replacement, value=true)
 /subsystem=elytron/key-store=jwt-key-store:add(type="JKS", relative-to=jboss.server.config.dir, path="rhsso.jks", credential-reference={clear-text="changeme"})
 /subsystem=elytron/token-realm=jwt-realm:add()
-/subsystem=elytron/token-realm=jwt-realm:write-attribute(name=oauth2-introspection, value={introspection-url=${env.SSO_URL}/auth/realms/master/protocol/openid-connect/token/introspect, client-id=eap, client-secret=${env.CLIENT_SECRET}})
+/subsystem=elytron/token-realm=jwt-realm:write-attribute(name=oauth2-introspection, value={introspection-url=http://${env.RHSSO_ADDRESS}/auth/realms/master/protocol/openid-connect/token/introspect, client-id=eap, client-secret=${env.RHSSO_CLIENT_SECRET}})
 /subsystem=elytron/security-domain=jwt-domain:add(realms=[{realm=jwt-realm}], permission-mapper=default-permission-mapper, default-realm=jwt-realm)
 /subsystem=elytron/http-authentication-factory=jwt-http-authentication-factory:add(security-domain=jwt-domain, http-server-mechanism-factory=global, mechanism-configurations=[{mechanism-name="BEARER_TOKEN", mechanism-realm-configurations=[{realm-name="jwt-realm"}]}])
 /subsystem=undertow/application-security-domain=jwt-domain:add(http-authentication-factory=jwt-http-authentication-factory)
