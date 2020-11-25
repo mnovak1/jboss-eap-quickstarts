@@ -23,8 +23,8 @@
         <authentication-configurations>
             <configuration name="default-config">
                 <credentials>
-                    <oauth2-bearer-token token-endpoint-uri="http://localhost:8180/auth/realms/master/protocol/openid-connect/token">
-                        <client-credentials client-id="eap" client-secret="518d1c1c-c3db-46a1-80b6-769d09f443ce"/>
+                    <oauth2-bearer-token token-endpoint-uri="http://${env.SSO_URL}/auth/realms/master/protocol/openid-connect/token">
+                        <client-credentials client-id="eap" client-secret="${env.CLIENT_SECRET}"/>
                         <resource-owner-credentials name="testuser" password="secretPass" />
                     </oauth2-bearer-token>
                 </credentials>
